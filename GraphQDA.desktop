@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=GraphQDA
+Terminal=false
+Exec=/home/alepage/Documents/dev/GraphQDA/src/run
+Icon=/home/alepage/Documents/dev/GraphQDA/src/img/icon.png
+Categories=Science

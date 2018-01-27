@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link href="/vendor/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/vendor/palette-color-picker/palette-color-picker.css" rel="stylesheet">
+		
+		<link href="/css/main.css" rel="stylesheet">
+		
+		<script type="text/javascript" src="/vendor/jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="/vendor/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/vendor/knockout-3.4.1.js"></script>
+		<script type="text/javascript" src="/vendor/tinymce/js/tinymce/tinymce.min.js"></script>
+		<script type="text/javascript" src="/vendor/vis-4.20.1/dist/vis.js"></script>
+		<script type="text/javascript" src="/vendor/palette-color-picker/palette-color-picker.min.js"></script>
+		
+		
+	</head>
+	<body>
+		<div id="main" class="container-fluid">
+
+<div class="container" style="padding: 20px;">
+	<p>Are you sure you want to delete that item? It can't be undone (like in <em>lost forever</em>).</p>
+	<p><em>Note: It won't delete item's data inside already-generated graphs, but they won't appear in newly generated graphs.</em></p>
+	
+	<p>Item's label: <strong data-bind="text: label"></strong></p>
+	
+	<div class="buttons">
+		<button class="btn btn-sm pull-right" data-bind="click: cancel">No (keep item)</button>
+		<button class="btn btn-sm pull-right" data-bind="click: submit">I'm sure (drop item)</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+var gui = require('nw.gui');
+var id = window.location.search.substr(4);
+
+var DeleteItem = require('../view/DeleteItem.js');
+
+var deleteItem = new DeleteItem(ko, gui);
+deleteItem.id = id;
+deleteItem.load();
+
+ko.applyBindings(deleteItem);
+
+
+</script>
+		</div>
+	</body>
+</html>
+

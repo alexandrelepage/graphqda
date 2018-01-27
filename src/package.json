@@ -1,0 +1,16 @@
+{
+  "main": "ctpl/app.html",
+  "name": "GraphQDA",
+  "description": "",
+  "version": "0.1.0",
+  "keywords": [ ],
+  "window": {
+    "title": "GraphQDA",
+    "toolbar": true,
+    "frame": true,
+    "kiosk": false,
+    "min_width": 950,
+    "min_height": 500,
+    "icon": "img/icon.png"
+  }
+}

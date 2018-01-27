@@ -1,0 +1,154 @@
+<!--
+	This file is part of GraphQDA.
+
+	GraphQDA is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	GraphQDA is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with GraphQDA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<include file="tpl/header.html">
+
+<div id="viewgraph">
+<div id="graphLoading" data-bind="visible: $root.beingLoaded">
+	<div style="padding-top: 100px;">
+		The graph is being generated<br>
+		<img src="/img/graphLoading.gif">
+	</div>
+</div>
+<!-- ko if: $root.showConfirm -->
+<div id="showConfirmGraph">
+You're safe, the graph have been saved.
+</div>
+<!-- /ko -->
+<div id="editZone">
+	<div class="editControl">
+		<img src="/img/document-save.png" data-bind="click: save">
+	</div>
+	<div class="editControl">
+		<img src="/img/document-new.png">
+	</div>
+	<div class="editControl">
+		<img src="/img/document-edit.png">
+	</div>
+	<div class="editControl">
+		<img src="/img/edit-delete.png" data-bind="click: deleteSelection">
+	</div>
+</div>
+<div id="graph" style="width: 100%;">
+</div>
+</div>
+<script type="text/javascript">
+var gui = require('nw.gui');
+var id = window.location.search.substr(4);
+
+var onresizeGraph = function() {
+	$('#editZone').height(window.innerHeight+'px');
+	$('#graph').height(window.innerHeight+'px');
+	$('#graphLoading').height(window.innerHeight+'px');
+	$('#graphLoading').width(window.innerWidth+'px');
+};
+
+window.onresize = onresizeGraph;
+gui.Window.get().maximize();
+
+var nodes = new vis.DataSet();
+var edges = new vis.DataSet();
+
+for (var i in global.app.currentProject().graphs())
+	if (global.app.currentProject().graphs()[i].graphId == id) {
+		var graph = global.app.currentProject().graphs()[i];
+		break;
+	}
+
+
+for (var i in graph.nodes._data)
+	nodes.add(graph.nodes._data[i]);
+for (var i in graph.edges._data)
+	edges.add(graph.edges._data[i]);
+
+var data = {
+	nodes: nodes,
+	edges: edges
+};
+graph.nodes = nodes;
+graph.edges = edges;
+
+var physics = !graph.physicsRun;
+
+if (physics) {
+	graph.beingLoaded(true);
+	setTimeout(function() {
+		graph.beingLoaded(false);
+	},30000);
+}
+var network = new vis.Network(document.getElementById('graph'), data, {
+
+	physics: {
+		enabled: physics,
+		solver: 'forceAtlas2Based',
+		forceAtlas2Based: {
+			gravitationalConstant: -500,
+			centralGravity: 0.01,
+			springLength: 100,
+			springConstant: 0.08,
+			damping: 0.4,
+			avoidOverlap: 0,
+		},
+		maxVelocity: 180,
+		minVelocity: 0.86,
+		timestep: 0.15
+	},
+	edges: {
+		smooth: false
+	}
+});
+graph.network = network;
+function stopSimulation() {
+	if (!graph.physicsRun) {
+		graph.physicsRun = true;
+		network.stopSimulation();
+		network.setOptions( { physics: false } );
+		
+		//Save x and y position of all nodes
+		graph.nodes = nodes;
+		graph.edges = edges;
+		graph.save(false);
+		graph.beingLoaded(false);
+	}
+};
+
+network.on('stabilizationIterationsDone', stopSimulation);
+network.on('stabilized', stopSimulation);
+
+/*
+
+});*/
+
+/*	physics: {
+		enabled: true,
+		solver: 'repulsion',
+		repulsion: {
+
+			nodeDistance: 400,
+			centralGravity: 0.2,
+			springLength: 350,
+			springConstant: 0.405,
+			damping: 0.09,
+			maxVelocity: 180,
+			minVelocity: 0.86,
+			timestep: 0.06
+		}
+	}
+	*/
+	
+global.app.ko.applyBindings(graph, document.getElementById('viewgraph'));
+</script>
+<include file="tpl/footer.html">

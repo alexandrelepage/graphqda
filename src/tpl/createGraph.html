@@ -1,0 +1,73 @@
+<!--
+	This file is part of GraphQDA.
+
+	GraphQDA is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	GraphQDA is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with GraphQDA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<include file="tpl/header.html">
+<div class="container" style="padding: 20px;">
+	<div class="row">
+		<div class="col-xs-4 formLabel">
+		Graph's title:
+		</div>
+		<div class="col-xs-8">
+			<input class="form-control" type="text" data-bind="value: graphTitle" />
+			<!--ko if: errors.emptyGraphTitle() --><span class="error">Please enter a title for the graph.</span><!-- /ko -->
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-4 formLabel">
+		Items:
+		</div>
+	
+		<div class="col-xs-8">
+			<div id="selectItems">
+				<a onclick="$('.checkboxSelectItems').prop('checked', true); createGraph.checkAll(true); return false;">All</a> - <a onclick="$('.checkboxSelectItems').prop('checked', false); createGraph.checkAll(false);return false;">None</a><br>
+				<div data-bind="foreach: app.currentProject().items()" style="height: 60px; overflow: auto;">
+					<label><input type="checkbox" class="checkboxSelectItems" data-bind="event: {change: $root.switchItem}" checked> <span data-bind="text: label()"></span></label><br>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-4 formLabel">
+		Options:
+		</div>
+		<div class="col-xs-8">
+			<input type="checkbox" data-bind="checked: showItems"> Show items as nodes<br>
+			<input type="checkbox" data-bind="checked: showCodes"> Show codes as nodes<br>
+			<input type="checkbox" data-bind="checked: showChunks"> Show chunks as nodes<br>
+			<input type="checkbox" data-bind="checked: showCodesRelations"> Show relations between codes<br>
+			<input type="checkbox" data-bind="checked: showRelationsItemsChunks"> Show relations between items and chunks<br>
+			<input type="checkbox" data-bind="checked: showRelationsChunksCodes"> Show relations between chunks and codes<br>
+			<input type="checkbox" data-bind="checked: physic"> Run a physic simulation to compute initial positions
+		</div>
+	</div>
+	<div class="buttons">
+		<button class="btn btn-sm pull-right" data-bind="click: cancel">Cancel</button>
+		<button class="btn btn-sm pull-right" data-bind="click: submit">Create</button>
+		
+	</div>
+</div>
+
+<script type="text/javascript">
+var gui = require('nw.gui');
+
+var CreateGraph = require('../view/CreateGraph.js');
+
+var createGraph = new CreateGraph(ko, gui);
+ko.applyBindings(createGraph);
+
+
+</script>
+<include file="tpl/footer.html">

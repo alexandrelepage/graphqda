@@ -1,0 +1,42 @@
+<!--
+	This file is part of GraphQDA.
+
+	GraphQDA is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	GraphQDA is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with GraphQDA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<script type="text/html" id="template-codes">
+	<div class="code">
+		<div class="codeLabel" data-bind=" click: $root.tag"><span class="square" data-bind="style: {backgroundColor: color}"></span><span data-bind="text: label"></span></div>
+		<div class="subcodes" data-bind="if: typeof(codes) != 'undefined'">
+		<!-- ko template: {name:'template-codes', foreach: codes} --><!-- /ko -->
+		</div>
+	</div>
+</script> <!-- hack for Kate </script> -->
+
+<!-- ko if: currentProject() !== null -->
+<div id="codes_options">
+	<p>
+		<img src="/img/tag-properties.png" width="22" title="Edit the codebook (add or remove codes)" data-bind="click: openEditCodebookWindow">
+	</p>
+</div>
+<div id="codes_list">
+	<h3>Codes</h3>
+	<div id="freetagContainer">
+		<button class="btn btn-default btn-sm align-center" data-bind="click: $root.tag" title="Use a Free tag to mark a part of speech as important without classification">Free tag</button>
+	</div>
+	<div id="codes_list_scrollable">
+		<!-- ko template: {name:'template-codes', foreach: currentProject().codes} -->
+		<!-- /ko -->
+	</div>
+</div>
+<!-- /ko -->

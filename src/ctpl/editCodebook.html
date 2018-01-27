@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link href="/vendor/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/vendor/palette-color-picker/palette-color-picker.css" rel="stylesheet">
+		
+		<link href="/css/main.css" rel="stylesheet">
+		
+		<script type="text/javascript" src="/vendor/jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="/vendor/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/vendor/knockout-3.4.1.js"></script>
+		<script type="text/javascript" src="/vendor/tinymce/js/tinymce/tinymce.min.js"></script>
+		<script type="text/javascript" src="/vendor/vis-4.20.1/dist/vis.js"></script>
+		<script type="text/javascript" src="/vendor/palette-color-picker/palette-color-picker.min.js"></script>
+		
+		
+	</head>
+	<body>
+		<div id="main" class="container-fluid">
+
+<div class="container" style="padding: 20px;">
+
+	<ul>
+		<li>Edit codes straight in the following list.</li>
+		<li>Click on colors to edit.</li>
+		<li>Click on <span class="glyphicon glyphicon-plus-sign"></span> beside a code to add a subcode.</li>
+		<li>Click on <span class="glyphicon glyphicon-minus-sign"></span> beside a code to delete it (all subcodes will be deleted as well).</li>
+		<li>Changes won't apply to already-generated graphs, but will apply to new graphs.</li>
+		<li>If you delete a code in which parts of speech are classified, these parts will <strong>not</strong> be deleted and will appear orphan in new graphs.</li>
+	</ul>
+	
+	<script type="text/html" id="template-codes">
+		<div class="code">
+			<div class="codeLabel" style="padding: 0;">
+				
+				<span class="glyphicon glyphicon-plus-sign" data-bind="click: addCode"></span>
+				<span class="glyphicon glyphicon-minus-sign" data-bind="click: $parent.removeCode"></span>
+				<input class="colorpicker" type="text" data-bind="textInput: color, attr: {value: color, id: 'code_'+id, name: 'code_'+id}">
+				<input type="text" data-bind="textInput: label" style="vertical-align: middle;"></div>
+			<div class="subcodes" data-bind="if: typeof(codes) != 'undefined'">
+			<!-- ko template: {name:'template-codes', foreach: codes} --><!-- /ko -->
+			</div>
+		</div>
+	</script> <!-- hack for Kate </script> -->
+
+	<div id="editCodebook">
+		<p><span class="glyphicon glyphicon-plus-sign" data-bind="click: addCode" style="font-size: 13px;"></span></p>
+		<!-- ko template: {name:'template-codes', foreach: codes} -->
+		<!-- /ko -->
+		<div style="height: 330px;"></div>
+	</div>
+
+	
+	<div class="buttons">
+		<button class="btn btn-sm pull-right" data-bind="click: cancel">Cancel</button>
+		<button class="btn btn-sm pull-right" data-bind="click: submit">Save</button>
+		
+	</div>
+</div>
+
+<script type="text/javascript">
+var gui = require('nw.gui');
+
+var onresizeEditCodebook = function() {
+	$('#editCodebook').height((window.innerHeight-270)+'px');
+};
+
+window.onresize = onresizeEditCodebook;
+onresizeEditCodebook();
+
+var EditCodebook = require('../view/EditCodebook.js');
+
+var editCodebook = new EditCodebook(ko, gui, $);
+ko.applyBindings(editCodebook);
+
+editCodebook.bindColorpickers(editCodebook.codes);
+
+
+</script>
+		</div>
+	</body>
+</html>
+

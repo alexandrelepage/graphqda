@@ -1,0 +1,222 @@
+<!-- 
+	This file is part of GraphQDA.
+
+	GraphQDA is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	GraphQDA is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with GraphQDA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<include file="tpl/header.html">
+<div id="promptSpeaker">
+	<!-- ko if: currentProject() != null && currentProject().currentItem() != null -->
+	<div id="speakers_list">
+		<!-- ko foreach: currentProject().currentItem().speakers -->
+		<div class="speakers_item" data-bind="css: {speaker_active: active}">
+			<span class="speaker_color" data-bind="style: {background: color}">
+			
+			</span>
+			<span class="speaker_label" data-bind="text: label">
+				
+			</span>
+		</div>
+		<!-- /ko -->
+		
+		<div id="speakers_shortcuts">
+			<span class="glyphicon glyphicon-circle-arrow-up"></span>
+			<span class="glyphicon glyphicon-circle-arrow-down"></span>
+			<span style="color: #fff; font-size: px; background: #000; border-radius: 5px; padding: 7px; vertical-align: middle;display-inline-block;">Enter</span>
+		</div>
+		<input type="text" style="height: 0; width: 0; overflow: hidden;border: 0; position: absolute; z-Index:0;">
+	</div>
+	
+
+	<!-- /ko -->
+</div>
+
+<div class="row">
+	<div class="col-xs-4 col-lg-2 col-xl-1" id="leftFrame">
+		<include file="tpl/leftFrame.html">
+	</div>
+	
+	<div class="col-xs-4 col-lg-8 col-xl-10" id="middleFrame">
+		<include file="tpl/middleFrame.html">
+	</div>
+	
+	<div class="col-xs-4 col-lg-2 col-xl-1" id="rightFrame">
+		<include file="tpl/rightFrame.html">
+	</div>
+</div>
+<div id="hiddenDiv">
+	<input id="inputOpenProject" type="file" nwdirectory onchange="app.openProject(this.value);">
+	<input id="inputOpenAudio" type="file" onchange="app.currentProject().currentItem().loadAudioFile(this.value);">
+</div>
+<script type="text/javascript">
+
+$('html,body').on('keyup mouseup', function(e) {
+  //if(e.which == 9) { e.preventDefault();e.stopPropagation();}
+});
+
+var fs = require('fs');
+var settings = JSON.parse(fs.readFileSync('../settings.json').toString()).settings;
+
+global.vis = vis;
+global.settings = settings;
+
+var App = require('../class/App.js');
+
+var app = new App(ko);
+app.settings(settings);
+global.app = app;
+global.$ = $;
+global.tinymce = tinymce;
+var Combokeys = require("combokeys");
+
+
+global.Combokeys = Combokeys;
+var combokeys = new Combokeys(document.documentElement);
+require('combokeys/plugins/global-bind')(combokeys);
+
+global.combokeys = combokeys;
+
+app.bindShortcuts();
+
+app.document = document;
+
+var editorheight = window.innerHeight*0.8;
+global.editorheight = ko.observable(editorheight);
+
+ko.applyBindings(app);
+
+var menubar = new nw.Menu({ type: 'menubar' });
+var file_menu = new nw.Menu();
+file_menu.append(new nw.MenuItem({label: '&New project', click: app.openProjectWindow}));
+file_menu.append(new nw.MenuItem({label: '&Open a project', click: app.openProjectMenu}));
+file_menu.append(new nw.MenuItem({label: 'Reopen'}));
+file_menu.append(new nw.MenuItem({type: 'separator'}));
+file_menu.append(new nw.MenuItem({label: '&Save', click: app.save}));
+
+var edit_menu = new nw.Menu();
+edit_menu.append(new nw.MenuItem({label: 'Search in corpus'}));
+edit_menu.append(new nw.MenuItem({label: 'Replace in corpus'}));
+edit_menu.append(new nw.MenuItem({label: 'Edit codebook', click: app.openEditCodebookWindow}));
+
+var outils_menu = new nw.Menu();
+outils_menu.append(new nw.MenuItem({label: 'New Item', click: app.openItemWindow}));
+outils_menu.append(new nw.MenuItem({label: 'New Graph', click: app.openGraphWindow}));
+outils_menu.append(new nw.MenuItem({label: 'Configure'}));
+
+var aide_menu = new nw.Menu();
+aide_menu.append(new nw.MenuItem({label: 'Manual (opens the Website)'}));
+aide_menu.append(new nw.MenuItem({label: 'About', click: app.openAboutWindow}));
+
+
+menubar.append(new nw.MenuItem( {
+	label: 'File',
+	submenu: file_menu
+}));
+menubar.append(new nw.MenuItem({
+	label: 'Edit',
+	submenu: edit_menu
+}));
+menubar.append(new nw.MenuItem({
+	label: 'Tools',
+	submenu: outils_menu
+}));
+menubar.append(new nw.MenuItem({
+	label: 'Help',
+	submenu: aide_menu
+}));
+
+nw.Window.get().menu = menubar;
+
+var graphContextMenu = new nw.Menu();
+var selectedGraph = 0;
+
+graphContextMenu.append(new nw.MenuItem({ label: 'Open graph', click: function() {
+	app.openGraph(selectedGraph);
+}}));
+graphContextMenu.append(new nw.MenuItem({ label: 'Delete graph', click: function() {
+	app.openConfirmDeleteGraph(selectedGraph);
+}}));
+graphContextMenu.append(new nw.MenuItem({ label: 'New graph', click: app.openGraphWindow}));
+
+var itemContextMenu = new nw.Menu();
+var selectedItem = 0;
+
+itemContextMenu.append(new nw.MenuItem({ label: 'Open item', click: function() {
+	for (var i in app.currentProject().items()) {
+		console.log(app.currentProject().items()[i].id() + ' VS ' + selectedItem);
+		if (app.currentProject().items()[i].id() == selectedItem) {
+			app.currentProject().openItem(app.currentProject().items()[i]);
+			break;
+		}
+	}
+}}));
+itemContextMenu.append(new nw.MenuItem({ label: 'Delete item', click: function() {
+	app.openConfirmDeleteItem(selectedItem);
+}}));
+itemContextMenu.append(new nw.MenuItem({ label: 'New item', click: app.openItemWindow}));
+
+
+document.body.addEventListener('contextmenu', function(ev) { 
+  
+  for (var i in ev.path) {
+	if (ev.path[i].id && ev.path[i].id.indexOf('graph_') !== -1) {
+		//Right click on a graph in the list
+		ev.preventDefault();
+		selectedGraph = parseInt(ev.path[i].id.replace('graph_', ''));
+		graphContextMenu.popup(ev.x, ev.y);
+	}
+	if (ev.path[i].id && ev.path[i].id.indexOf('item_') !== -1) {
+		ev.preventDefault();
+		selectedItem = parseInt(ev.path[i].id.replace('item_', ''));
+		itemContextMenu.popup(ev.x, ev.y);
+	}
+  }
+  
+  return false;
+});
+
+
+nw.Window.get().maximize();
+
+var onresize = function() {
+	console.log(window.innerHeight);
+	$('#leftFrame').height(window.innerHeight+'px');
+	$('#elements_list').height(((window.innerHeight-51)*0.6)+'px');
+	$('#elements_list_scrollable').height(((window.innerHeight-51)*0.6-30)+'px');
+	$('#graphs_list').height(((window.innerHeight-51)*0.4-12)+'px');
+	$('#graphs_list_scrollable').height(((window.innerHeight-51)*0.4-12-30)+'px');
+	$('#promptSpeaker').width(window.innerWidth+'px');
+	$('#promptSpeaker').height(window.innerHeight+'px');
+	
+	$('#codes_list').height((window.innerHeight-51)+'px');
+	$('#codes_list_scrollable').height((window.innerHeight-51-30-50)+'px');
+	$('#rightFrame').height(window.innerHeight+'px');
+	$('#middleFrameTop').height((window.innerHeight*0.80)+'px');
+	$('#middleFrameBottom').height((window.innerHeight*0.20-10)+'px');
+	global.editorheight(window.innerHeight*0.80);
+	if (app.currentProject() != null && app.currentProject().currentItem() != null && app.currentProject().currentItem().editor) {
+		$('.mce-tinymce').height((global.editorheight())+'px');
+		$('.mce-edit-area').height((global.editorheight()-$('.mce-toolbar-grp').height())+'px');
+		$('#transcriptZone_ifr').height((global.editorheight()-$('.mce-toolbar-grp').height())+'px');
+		$('#player_player').css('marginTop', $('#middleFrameBottom').height()/2-24);
+		console.log();
+		console.log('resize called for editor');
+	}
+	console.log('set to '+global.editorheight());
+};
+global.onresize = onresize;
+onresize();
+window.onresize = onresize;
+
+</script>
+<include file="tpl/footer.html">

@@ -1,0 +1,5 @@
+#!/bin/bash
+cd /home/alepage/Documents/dev/GraphQDA/src/
+
+nodejs /home/alepage/Documents/dev/GraphQDA/src/scripts/generate_template.js
+/usr/local/nwjs/nw /home/alepage/Documents/dev/GraphQDA/src/.

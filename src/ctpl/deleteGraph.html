@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link href="/vendor/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/vendor/palette-color-picker/palette-color-picker.css" rel="stylesheet">
+		
+		<link href="/css/main.css" rel="stylesheet">
+		
+		<script type="text/javascript" src="/vendor/jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="/vendor/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/vendor/knockout-3.4.1.js"></script>
+		<script type="text/javascript" src="/vendor/tinymce/js/tinymce/tinymce.min.js"></script>
+		<script type="text/javascript" src="/vendor/vis-4.20.1/dist/vis.js"></script>
+		<script type="text/javascript" src="/vendor/palette-color-picker/palette-color-picker.min.js"></script>
+		
+		
+	</head>
+	<body>
+		<div id="main" class="container-fluid">
+
+<div class="container" style="padding: 20px;">
+	<p>Are you sure you want to delete that graph? It can't be undone (like in <em>lost forever</em>).</p>
+	<p>Graph's title: <strong data-bind="text: title"></strong></p>
+	
+	<div class="buttons">
+		<button class="btn btn-sm pull-right" data-bind="click: cancel">No (keep the graph)</button>
+		<button class="btn btn-sm pull-right" data-bind="click: submit">I'm sure (throw the graph)</button>
+		
+	</div>
+</div>
+
+<script type="text/javascript">
+var gui = require('nw.gui');
+var id = window.location.search.substr(4);
+
+var DeleteGraph = require('../view/DeleteGraph.js');
+
+var deleteGraph = new DeleteGraph(ko, gui);
+deleteGraph.id = id;
+deleteGraph.load();
+
+ko.applyBindings(deleteGraph);
+
+
+</script>
+		</div>
+	</body>
+</html>
+

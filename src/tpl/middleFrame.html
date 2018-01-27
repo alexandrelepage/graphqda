@@ -1,0 +1,51 @@
+<!--
+	This file is part of GraphQDA.
+
+	GraphQDA is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	GraphQDA is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with GraphQDA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<div id="middleFrameTop">
+	<!-- ko if: currentProject() == null -->
+	<include file="tpl/welcome.html">
+	<!-- /ko -->
+	<!-- ko if: currentProject() != null -->
+	
+		<!-- ko if: currentProject().currentItem() != null -->
+		<div id="transcriptZone"></div>
+		<!-- /ko -->
+	<!-- /ko -->
+</div>
+<div id="middleFrameBottom">
+	<!-- ko if: currentProject() != null && currentProject().currentItem() != null -->
+	<div id="audioZone">
+		<div id="shortcuts_help">
+			<span class="shortcut" data-bind="text: settings().shortcuts.playOrPause"></span> Play/pause
+			<span class="shortcut" data-bind="text: settings().shortcuts.rewind"></span> Rewind 10s
+			<span class="shortcut" data-bind="text: settings().shortcuts.switchSpeaker"></span> Switch Speaker
+		</div>
+		<div id="audioToolbar">
+			<img title="Set audio replay file" src="/img/folder-downloads.png" width="22" data-bind="click: currentProject().currentItem().openAudioFileDialog">
+			<!-- ko if: currentProject().currentItem().audioFile() != '' --><strong>Current file: </strong><span data-bind="text: currentProject().currentItem().audioFile"></span><!-- /ko -->
+		</div>
+		<div id="player">
+			<div id="player_player">
+				<!-- ko if: currentProject().currentItem().audioFile() != '' -->
+				<img id="playerButton" src="/img/media-playback-start.png" width="48" height="48">
+				<audio controls controlsList="nodownload" style="z-Index: 0;">
+				</audio>
+				<!-- /ko -->
+			</div>
+		</div>
+	</div>
+	<!-- /ko -->
+</div>

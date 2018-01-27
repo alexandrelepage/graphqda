@@ -1,0 +1,40 @@
+<!--
+	This file is part of GraphQDA.
+
+	GraphQDA is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	GraphQDA is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with GraphQDA.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!-- ko if: currentProject() !== null -->
+<div id="project_options">
+	
+	<p>
+		<img src="/img/folder-new.png" title="New Item (Subject, Interview, Focus group, ...)" data-bind="click: openItemWindow">
+		<img src="/img/skg-chart-bubble-new.png" title="New Graph" data-bind="click: openGraphWindow">
+		<!-- <img src="/img/configure.png">-->
+	</p>
+	
+</div>
+<div id="elements_list">
+	<h3>Items</h3>
+	<div id="elements_list_scrollable" data-bind="foreach: currentProject().items">
+		<p data-bind="click: app.currentProject().openItem, css: {activeItem: active}, attr: {id: 'item_'+id()}"><img src="/img/folder.png" width="16"><span data-bind="text: label"></span></p>
+	</div>
+</div>
+
+<div id="graphs_list">
+	<h3>Graphs</h3>
+	<div id="graphs_list_scrollable" data-bind="foreach: currentProject().graphs">
+		<p data-bind="click: app.openGraph, attr: {id: 'graph_'+graphId}"><img src="/img/skg-chart-bubble.png" width="16"><span data-bind="text: title"></span></p>
+	</div>
+</div>
+<!-- /ko -->
